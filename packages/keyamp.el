@@ -18,6 +18,11 @@
 ;;
 ;; (require 'keyamp)
 ;; (keyamp)
+;;
+;; Tests:
+;;
+;; M-x load-file RET ~/.emacs.d/packages/keyamp-tests.el RET
+;; M-x keyamp-tests-run RET
 
 ;;; Code:
 
@@ -949,7 +954,7 @@ Huge amount of bindings from `keyamp-script-leader-map' goes here."
 (keyamp--map-return keyamp-command-map keyamp-insert)
 (keyamp--map keyamp-command-map
   '(("C-q" . toggle-agent)                 ("C-S-q" . terminal)
-    ("C-t" . terminal)                     ("C-S-t" . toggle-agent)))
+    ("C-t" . split-window-r)               ("C-S-t" . toggle-agent)))
 (keyamp--map keyamp-command-map
   '(;; Left half
     ("`" . alternate-frame)                ("~"  . keyamp-insert-and-self-insert)
@@ -1114,7 +1119,7 @@ Huge amount of bindings from `keyamp-script-leader-map' goes here."
     ("'" . list-timers)
     ("n" . list-processes)
     ("m" . vt-conn)
-    ("," . ai)
+    ("," . vt-conn-tag)
     ("." . open-last-closed)
     ("/" . bookmark-jump-remote)
 
@@ -1168,7 +1173,7 @@ Huge amount of bindings from `keyamp-script-leader-map' goes here."
 (keyamp--map-return keyamp-rleader-map open-file)
 (keyamp--map keyamp-rleader-map
   '(("C-q" . ignore)                       ("C-S-q" . ignore)
-    ("C-t" . toggle-truncate-lines)        ("C-S-t" . ignore)))
+    ("C-t" . toggle-wrap-lines)            ("C-S-t" . ignore)))
 (keyamp--map-escape keyamp-rleader-map ignore)
 (keyamp--map-backtab keyamp-rleader-map ignore)
 (keyamp--map-tab keyamp-rleader-map open-in-external-app)
@@ -1269,7 +1274,7 @@ Huge amount of bindings from `keyamp-script-leader-map' goes here."
 
 (when keyamp-touchp
   (keyamp--map keyamp-rleader-map
-    '(("<left>"  . toggle-truncate-lines)
+    '(("<left>"  . toggle-wrap-lines)
       ("<right>" . scratch)
       ("<up>"    . toggle-messages)
       ("<down>"  . delete-other-windows)
@@ -1297,12 +1302,13 @@ Huge amount of bindings from `keyamp-script-leader-map' goes here."
     ))
 
 (keyamp--map-double
-  '((keyamp-escape . toggle-ibuffer)       (other-win   . jump-mark)
-    (beg-of-line   . beg-of-buf)           (end-of-lyne . end-of-buf)
-    (proced-defer  . save-close-buf)       (sh-defer    . delete-other-windows)))
+  '((beg-of-line   . beg-of-buf)           (end-of-lyne . end-of-buf)
+    (proced-defer  . save-close-buf)       (sh-defer    . delete-other-windows)
+    (other-win     . jump-mark)))
 
-(when keyamp-touchp
-  (keyamp--map-double '((keyamp-escape . toggle-agent))) )
+(if keyamp-touchp
+    (keyamp--map-double '((keyamp-escape . toggle-agent)))
+  (keyamp--map-double '((keyamp-escape . toggle-ibuffer))))
 
 (when keyamp-touchp ; Standard iOS hold down candidates
   (keyamp--map keyamp-command-map
@@ -1361,7 +1367,7 @@ Huge amount of bindings from `keyamp-script-leader-map' goes here."
       (keyamp--map keyamp-command-map
         '(("C-q" . execute-extended-command) ("C-t" . toggle-dired)))
     (keyamp--map keyamp-command-map
-      '(("C-q" . toggle-agent) ("C-t" . terminal)))))
+      '(("C-q" . toggle-agent) ("C-t" . split-window-r)))))
 
 (add-hook 'wdired-mode-hook 'keyamp-wdired-enter)
 (advice-add 'wdired-change-to-dired-mode :after 'keyamp-wdired-exit)
@@ -1909,7 +1915,7 @@ keyboard ASCII CHAR."
   (define-prefix-command 'keyamp-g-leader-map)
   (keyamp--map-leader keyamp-g-leader-map '(nil . dired-do-delete))
   (keyamp--map-escape keymap deactivate-region)
-  (keyamp--map-return keymap toggle-ibuffer)
+  (keyamp--map-return keymap vt-tramp-terminal)
   (keyamp--remap keymap
     '((activate-region . rectangle)
       (other-win       . delete-window)
@@ -1927,7 +1933,7 @@ keyboard ASCII CHAR."
   (when (eq (mark) (point))
     (deactivate-region)))
 
-(advice-add-macro '(jump-8 jump-7 screen-home-toggle delete-window toggle-ibuffer)
+(advice-add-macro '(jump-8 jump-7 screen-home-toggle delete-window vt-tramp-terminal)
                   :before 'keyamp-deactivate-region)
 
 (with-sparse-keymap
@@ -2632,45 +2638,45 @@ keyboard ASCII CHAR."
   (keyamp--map vterm-mode-map '(("C-t" . vterm-send-tab)))
   (keyamp--remap vterm-mode-map
     '(;; Left half
-      (insert-space-before . vt-enter-copy-mode)    ; Q
-      (periodic-chart      . vt-split-view)         ; SPC 1
-      (backward-del-word   . vt-shell-vi-cmd)       ; W Sync point or do modify if in transient
-      (undo                . vterm-undo)            ; E
-      (del-word            . vt-shell-vi-cmd)       ; R Sync point or do modify if in transient
-      (query-replace       . vt-vi)                 ; SPC R Activate vi mode (TUI)
-      (cut-text-block      . vt-conn-reconnect)     ; T
-      (copy-text-block     . vt-sftp-jump)          ; SPC T
-      (shrink-whitespaces  . vt-conn-localhost)     ; A
-      (kill-line           . vt-close-window)       ; SPC A
-      (open-line           . vt-prev-window)        ; S
-      (del-back            . vt-shell-vi-cmd)       ; D Sync point or do modify if in transient
-      (newline             . vt-next-window)        ; F
-      (new-empty-buffer    . vt-new-window)         ; SPC G
-      (toggle-comment      . vterm-read-send-key)   ; Z
-      (cut-line            . vterm-clear)           ; X
-      (paste-or-prev       . vterm-yank)            ; V
-      (paste-from-r1       . paste-from-r1-vt)      ; SPC V
-      (toggle-case         . vt-position)           ; B
-      (toggle-prev-case    . vt-command-copy)       ; SPC B
-      (revert-buffer       . prev-vterm-buf)        ; SPC 3
-      (select-word         . vt-shell-vi-cmd-up)    ; SPC SPC
-      (org-ctrl-c-ctrl-c   . vterm-send-c-c)        ; SPC W
+      (insert-space-before       . vt-enter-copy-mode)    ; Q
+      (periodic-chart            . vt-split-view)         ; SPC 1
+      (backward-del-word         . vt-shell-vi-cmd)       ; W Sync point or do modify if in transient
+      (undo                      . vterm-undo)            ; E
+      (del-word                  . vt-shell-vi-cmd)       ; R Sync point or do modify if in transient
+      (query-replace             . vt-vi)                 ; SPC R Activate vi mode (TUI)
+      (cut-text-block            . vt-conn-reconnect)     ; T
+      (copy-text-block           . vt-sftp-jump)          ; SPC T
+      (shrink-whitespaces        . vt-conn-localhost)     ; A
+      (kill-line                 . vt-close-window)       ; SPC A
+      (open-line                 . vt-prev-window)        ; S
+      (del-back                  . vt-shell-vi-cmd)       ; D Sync point or do modify if in transient
+      (newline                   . vt-next-window)        ; F
+      (new-empty-buffer          . vt-new-window)         ; SPC G
+      (toggle-comment            . vterm-read-send-key)   ; Z
+      (cut-line                  . vterm-clear)           ; X
+      (paste-or-prev             . vterm-yank)            ; V
+      (paste-from-r1             . paste-from-r1-vt)      ; SPC V
+      (toggle-case               . vt-position)           ; B
+      (toggle-prev-case          . vt-command-copy)       ; SPC B
+      (revert-buffer             . prev-vterm-buf)        ; SPC 3
+      (select-word               . vt-shell-vi-cmd-up)    ; SPC SPC
+      (org-ctrl-c-ctrl-c         . vterm-send-c-c)        ; SPC W
 
       ;; Right half
-      (page-up-half        . vt-page-up-half)       ; DEL H
-      (page-dn-half        . vt-page-dn-half)       ; DEL ;
-      (dired-jump          . vt-conn-tramp)         ; DEL M
-      (copy-all            . vt-copy)               ; DEL C
-      (password-store      . vt-sudo-password-copy) ; DEL Y
-      (back-char           . vterm-left)
-      (forw-char           . vterm-right)
-      (up-line             . vterm-up)
-      (down-line           . vterm-down)))
+      (page-up-half              . vt-page-up-half)       ; DEL H
+      (page-dn-half              . vt-page-dn-half)       ; DEL ;
+      (dired-jump                . vt-conn-tramp)         ; DEL M
+      (copy-all                  . vt-copy)               ; DEL C
+      (title-case-region-or-line . vt-sudo-password-copy) ; DEL B
+      (back-char                 . vterm-left)
+      (forw-char                 . vterm-right)
+      (up-line                   . vterm-up)
+      (down-line                 . vterm-down)))
 
   (keyamp--map-tab vterm-copy-mode-map vterm-send-tab)
   (keyamp--map-backtab vterm-copy-mode-map nil)
 
-  (keyamp--map vterm-copy-mode-map '(("C-t" . vterm-send-tab)))
+  ;; (keyamp--map vterm-copy-mode-map '(("C-t" . vterm-send-tab)))
   (keyamp--remap vterm-copy-mode-map
     '(;; Left half
       (insert-space-before . vt-exit-copy-mode)      ; Q
@@ -2698,6 +2704,7 @@ keyboard ASCII CHAR."
       (org-ctrl-c-ctrl-c   . vt-exit-copy-mode)      ; SPC W
 
       ;; Right half
+      (keyamp-insert       . vt-exit-copy-mode)      ; RET
       (page-up-half        . vt-page-up-half)        ; DEL H
       (page-dn-half        . vt-page-dn-half)        ; DEL ;
       (dired-jump          . vt-conn-tramp)          ; DEL M
@@ -2943,6 +2950,7 @@ keyboard ASCII CHAR."
         (forw-word         . vt-codex-vi-forward-word)
         (del-word          . vt-codex-vi-delete-word)
         (backward-del-word . vt-codex-vi-back-delw)
+        (del-back          . vt-codex-vi-delete)
         (beg-of-line       . vt-codex-vi-bol)
         (end-of-lyne       . vt-codex-vi-eol)
         (paste-or-prev     . vt-codex-vi-yank)
@@ -2956,7 +2964,8 @@ keyboard ASCII CHAR."
         vt-codex-vi-down            vt-codex-vi-back-word
         vt-codex-vi-forward-word    vt-codex-vi-delete-word
         vt-codex-vi-back-delw       vt-codex-vi-bol
-        vt-codex-vi-eol             vt-codex-vi-yank) :command))
+        vt-codex-vi-eol             vt-codex-vi-yank
+        vt-codex-vi-delete) :command))
 
   (with-sparse-keymap ; Move word repeat
     (keyamp--remap keymap
@@ -3067,20 +3076,21 @@ keyboard ASCII CHAR."
 
 (with-eval-after-load 'gnus-group
   (keyamp--remap gnus-group-mode-map
-    '((backward-del-word  . sun-moon)
-      (undo               . split-window-below)
-      (del-word           . gnus-group-enter-server-mode)
-      (cut-text-block     . calc)
-      (open-line          . prev-buf)
-      (del-back           . gnus-group-get-new-news)
-      (newline            . next-buf)
-      (cut-line           . prev-eww-buf)
-      (paste-or-prev      . tasks)
-      (backward-bracket   . downloads)
-      (forward-bracket    . save-close-buf)))
+    '((backward-del-word . sun-moon)
+      (undo              . split-window-below)
+      (del-word          . gnus-group-enter-server-mode)
+      (cut-text-block    . calc)
+      (open-line         . prev-buf)
+      (del-back          . gnus-group-get-new-news)
+      (newline           . next-buf)
+      (cut-line          . prev-eww-buf)
+      (paste-or-prev     . tasks)
+      (backward-bracket  . downloads)
+      (forward-bracket   . save-close-buf)))
   (when keyamp-touchp
     (keyamp--remap gnus-group-mode-map
-      '((back-char . screen-home-right) (forw-char . screen-home)))))
+      '((back-char . screen-home-right) (forw-char . screen-home)))
+    (keyamp--map gnus-group-mode-map '(("C-<down>" . gnus-topic-select-group)))))
 
 (with-eval-after-load 'gnus-art
   (push 'gnus-article-mode keyamp-lines-move-modes)
@@ -3103,8 +3113,13 @@ keyboard ASCII CHAR."
       (paste-from-r1 . gnus-summary-save-parts)))
   (when keyamp-touchp
     (keyamp--remap gnus-summary-mode-map
-      '((back-char . screen-home-right) (forw-char . screen-home)
+      '((back-char . screen-home-right)
+        (forw-char . screen-home)
         (toggle-comment . hide-virtual-keyboard)))
+    (keyamp--map gnus-summary-mode-map
+      '(("C-<down>"  . toggle-gnus)
+        ("C-<left>"  . gnus-summary-prev-group)
+        ("C-<right>" . gnus-summary-next-group)))
 
     (with-sparse-keymap
       (keyamp--map-leader keymap '(page-dn-half . down-line))
@@ -3450,7 +3465,7 @@ keyboard ASCII CHAR."
     (advice-add 'keyamp-input-timer-payload :after #'keyamp-input-timer-payload-calc)))
 
 (with-eval-after-load 'markdown-mode
-  (keyamp--remap markdown-mode-map '((open-in-external-app . markdown-preview))))
+  (keyamp--remap markdown-mode-map '((open-in-external-app . markdown-github-preview))))
 
 (with-eval-after-load 'dslide
   (keyamp--map-backtab dslide-mode-map nil)
@@ -3708,7 +3723,7 @@ keyboard ASCII CHAR."
                  text-scale-decrease                     t
                  text-scale-increase                     t
                  text-scale-reset                        t
-                 toggle-truncate-lines                   t
+                 toggle-wrap-lines                       t
                  translate                               t
                  up-line                                 t
                  up-line-rev                             t
@@ -3907,9 +3922,9 @@ insert cancel the timer.")
 
 ;; Karabiner
 
-(defun keyamp-set-var-karabiner (K V)
+(defun keyamp-set-var-karabiner (K V &optional Wait)
   "Set karabiner variable K to value V via shell command."
-  (call-process keyamp-karabiner-cli nil 0 nil
+  (call-process keyamp-karabiner-cli nil (unless Wait 0) nil
                 "--set-variables" (concat "{\"" K "\":" V "}")))
 
 (defconst keyamp-karabiner-insert-mode "insert mode activated"
@@ -3934,8 +3949,13 @@ insert cancel the timer.")
     (add-hook 'isearch-mode-hook     'keyamp-insert-karabiner)
     (add-hook 'isearch-mode-end-hook 'keyamp-command-karabiner)
     (add-hook 'minibuffer-setup-hook 'keyamp-insert-karabiner)
-    (add-hook 'kill-emacs-hook       'keyamp-karabiner-deactivate)
+    (add-hook 'kill-emacs-hook       'keyamp-karabiner-kill-emacs)
     (keyamp-command-karabiner)))
+
+(defun keyamp-karabiner-kill-emacs ()
+  "Deactivate karabiner synchronously before Emacs restart so it does
+not leave a zombie process."
+  (keyamp-set-var-karabiner keyamp-karabiner-insert-mode "1" t))
 
 (defun keyamp-karabiner-deactivate ()
   "Deactivate karabiner."

@@ -3122,25 +3122,29 @@ before actually send the cd command."
 (defun terminal ()
   "Terminal."
   (interactive)
-  (if (fboundp 'vterm)
-      (if (eq major-mode 'vterm-mode)
-          (let ((current-prefix-arg '-)
-                (buf (current-buffer)))
-            (call-interactively 'next-vterm-buf)
-            (when (eq buf (current-buffer))
-              (call-interactively 'vt-conn-localhost)))
-        (if (and (boundp 'vt-buffer)
-                 vt-buffer
-                 (get-buffer vt-buffer))
-            (progn
-              (switch-to-buffer vt-buffer)
-              (when (or (eq (point) (point-min))
-                        (eq (point) (line-beginning-position)))
-                (vterm-reset-cursor-point))
-              (when (fboundp 'vt-position)
-                (vt-position)))
-          (call-interactively 'next-vterm-buf)))
-    (shell)))
+  (cond
+   ((not (fboundp 'vterm))
+    (shell))
+   ((and (fboundp 'vt-tramp-terminal)
+         (file-remote-p default-directory))
+    (vt-tramp-terminal))
+   ((eq major-mode 'vterm-mode)
+    (let ((current-prefix-arg '-)
+          (buf (current-buffer)))
+      (next-vterm-buf)
+      (when (eq buf (current-buffer))
+        (vt-conn-localhost))))
+   ((and (boundp 'vt-buffer)
+         vt-buffer
+         (get-buffer vt-buffer))
+    (switch-to-buffer vt-buffer)
+    (when (or (eq (point) (point-min))
+              (eq (point) (line-beginning-position)))
+      (vterm-reset-cursor-point))
+    (when (fboundp 'vt-position)
+      (vt-position)))
+   (t
+    (next-vterm-buf))))
 
 (defun toggle-terminal ()
   "Toggle terminal."
@@ -3632,15 +3636,15 @@ Second right click to select quote."
         (when (window-dedicated-p win)
           (throw 'found t))))))
 
-(defun split-window-below-wrap (fun &rest r)
-  "Split only if one window else rotate the split."
-  (if (or (not (eq this-command 'split-window-below))
-          (or (one-window-p)
-              (any-window-dedicated-p)))
-      (apply fun r)
-    (split-window-rotate)))
+;; (defun split-window-below-wrap (fun &rest r)
+;;   "Split only if one window else rotate the split."
+;;   (if (or (not (eq this-command 'split-window-below))
+;;           (or (one-window-p)
+;;               (any-window-dedicated-p)))
+;;       (apply fun r)
+;;     (split-window-rotate)))
 
-(advice-add 'split-window-below :around #'split-window-below-wrap)
+;; (advice-add 'split-window-below :around #'split-window-below-wrap)
 
 (defun other-win ()
   "Other Window."
@@ -4038,6 +4042,8 @@ The overlay is automatically removed after timeout. Tap it."
                              (when (overlayp hide-virtual-keyboard-ov)
                                (delete-overlay hide-virtual-keyboard-ov)
                                (setq hide-virtual-keyboard-ov nil)))))))
+
+(defalias 'toggle-wrap-lines #'toggle-truncate-lines)
 
 (provide 'keycom)
 
