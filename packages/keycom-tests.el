@@ -1,11 +1,202 @@
 ;;; keycom-tests.el --- Tests for KEYCOM -*- lexical-binding: t; -*-
 
+;; Run with:
+;; /Applications/Emacs.app/Contents/MacOS/Emacs -Q --batch \
+;;   --eval '(setq load-prefer-newer t)' \
+;;   -L ~/.emacs.d/packages -l keycom-tests \
+;;   --eval '(ert-run-tests-batch-and-exit "^keycom-test-")'
+
 (require 'ert)
+(require 'json)
 (require 'keycom)
 
 (defvar org-agenda-file-1)
 (defvar org-agenda-file-2)
 (defvar org-agenda-file-3)
+
+(ert-deftest keycom-test-open-file-urls ()
+  (dolist (sample '(("https://example.org/a" . "https://example.org/a")
+                    ("http://example.org/a" . "http://example.org/a")
+                    ("See (https://example.org/a), next" . "https://example.org/a")
+                    ("See (https://example.org/a)." . "https://example.org/a")
+                    ("[site](https://example.org/a_(b))." . "https://example.org/a_(b)")
+                    ("https://example.org/a_(b)" . "https://example.org/a_(b)")))
+    (let ((browse-url-ff-patterns nil)
+          opened)
+      (cl-letf (((symbol-function 'browse-url)
+                 (lambda (url &rest _) (setq opened url))))
+        (with-temp-buffer
+          (insert (car sample))
+          (goto-char (point-min))
+          (search-forward "example.org")
+          (open-file)))
+      (should (equal opened (cdr sample))))))
+
+(ert-deftest keycom-test-open-file-selected-url ()
+  (let ((browse-url-ff-patterns nil)
+        opened)
+    (cl-letf (((symbol-function 'browse-url)
+               (lambda (url &rest _) (setq opened url))))
+      (with-temp-buffer
+        (let ((transient-mark-mode t))
+          (insert "https://example.org/selected unrelated")
+          (goto-char (point-min))
+          (push-mark (+ (point-min) (length "https://example.org/selected")) t t)
+          (open-file))))
+    (should (equal opened "https://example.org/selected"))))
+
+(ert-deftest keycom-test-open-file-youtube ()
+  (let (opened)
+    (cl-letf (((symbol-function 'movie)
+               (lambda (url) (setq opened url)))
+              ((symbol-function 'browse-url)
+               (lambda (&rest _) (ert-fail "YouTube URL opened in browser"))))
+      (with-temp-buffer
+        (insert "https://www.youtube.com/watch?v=example")
+        (goto-char (point-min))
+        (search-forward "youtube.com")
+        (open-file)))
+    (should (equal opened "https://www.youtube.com/watch?v=example"))))
+
+(ert-deftest keycom-test-open-file-existing-path ()
+  (let (opened)
+    (cl-letf (((symbol-function 'file-exists-p)
+               (lambda (path) (equal path "/tmp/report.txt")))
+              ((symbol-function 'find-file)
+               (lambda (path) (setq opened path))))
+      (with-temp-buffer
+        (insert "/tmp/report.txt")
+        (goto-char (point-max))
+        (open-file)))
+    (should (equal opened "/tmp/report.txt"))))
+
+(ert-deftest keycom-test-open-file-file-url ()
+  (let (opened)
+    (cl-letf (((symbol-function 'file-exists-p)
+               (lambda (path) (equal path "/tmp/report.txt")))
+              ((symbol-function 'find-file)
+               (lambda (path) (setq opened path))))
+      (with-temp-buffer
+        (insert "file:///tmp/report.txt")
+        (goto-char (point-max))
+        (open-file)))
+    (should (equal opened "/tmp/report.txt"))))
+
+(ert-deftest keycom-test-open-file-home-path ()
+  (let ((home (getenv "HOME"))
+        opened)
+    (cl-letf (((symbol-function 'file-exists-p)
+               (lambda (path) (equal path (concat home "/report.txt"))))
+              ((symbol-function 'find-file)
+               (lambda (path) (setq opened path))))
+      (with-temp-buffer
+        (insert "$HOME/report.txt")
+        (goto-char (point-max))
+        (open-file)))
+    (should (equal opened (concat home "/report.txt")))))
+
+(ert-deftest keycom-test-open-file-tramp ()
+  (let (opened)
+    (cl-letf (((symbol-function 'find-file)
+               (lambda (path) (setq opened path))))
+      (with-temp-buffer
+        (insert "/ssh:user@host:/home/user/report.txt")
+        (goto-char (point-max))
+        (open-file)))
+    (should (equal opened "/ssh:user@host:/home/user/report.txt"))))
+
+(ert-deftest keycom-test-open-file-line-number ()
+  (let (opened line)
+    (cl-letf (((symbol-function 'file-exists-p)
+               (lambda (path) (equal path "/tmp/report.txt")))
+              ((symbol-function 'find-file)
+               (lambda (path)
+                 (setq opened path)
+                 (erase-buffer)
+                 (insert "first\nsecond\nthird\n"))))
+      (with-temp-buffer
+        (insert "/tmp/report.txt:2:7")
+        (goto-char (point-max))
+        (open-file)
+        (setq line (line-number-at-pos))))
+    (should (equal opened "/tmp/report.txt"))
+    (should (= line 2))))
+
+(ert-deftest keycom-test-open-file-fragment ()
+  (let (opened found)
+    (cl-letf (((symbol-function 'file-exists-p)
+               (lambda (path) (equal path "/tmp/report.txt")))
+              ((symbol-function 'find-file)
+               (lambda (path)
+                 (setq opened path)
+                 (erase-buffer)
+                 (insert "before target after"))))
+      (with-temp-buffer
+        (insert "/tmp/report.txt#target")
+        (goto-char (point-max))
+        (open-file)
+        (setq found (looking-back "target" (line-beginning-position)))))
+    (should (equal opened "/tmp/report.txt"))
+    (should found)))
+
+(ert-deftest keycom-test-open-file-elisp-extension ()
+  (let (opened)
+    (cl-letf (((symbol-function 'file-exists-p)
+               (lambda (path) (equal path "/tmp/helper.el")))
+              ((symbol-function 'find-file)
+               (lambda (path) (setq opened path))))
+      (with-temp-buffer
+        (insert "/tmp/helper")
+        (goto-char (point-max))
+        (open-file)))
+    (should (equal opened "/tmp/helper.el"))))
+
+(ert-deftest keycom-test-open-file-missing-path ()
+  (let (fallback)
+    (cl-letf (((symbol-function 'file-exists-p) (lambda (&rest _) nil))
+              ((symbol-function 'describe-foo-at-point-error)
+               (lambda () (setq fallback t))))
+      (with-temp-buffer
+        (insert "/tmp/missing")
+        (goto-char (point-max))
+        (open-file)))
+    (should fallback)))
+
+(ert-deftest keycom-test-open-file-dired ()
+  (let (opened)
+    (cl-letf (((symbol-function 'open-in-external-app)
+               (lambda () (setq opened t))))
+      (with-temp-buffer
+        (setq major-mode 'dired-mode)
+        (open-file)))
+    (should opened)))
+
+(ert-deftest keycom-test-json-pretty-compact ()
+  (skip-unless (executable-find "fracjson"))
+  (with-temp-buffer
+    (setq buffer-file-name "/tmp/keyamp.json")
+    (insert "{\n  \"rules\": [\n    {\"from\": {\"key_code\": \"a\"}, \"to\": [{\"key_code\": \"b\"}]}\n  ]\n}\n")
+    (let ((original (json-read-from-string (buffer-string))))
+      (json-pretty-compact)
+      (should (equal (json-read-from-string (buffer-string)) original))
+      (should (string-match-p
+               (regexp-quote "{ \"from\": {\"key_code\": \"a\"}")
+               (buffer-string))))))
+
+(ert-deftest keycom-test-json-pretty-compact-invalid ()
+  (skip-unless (executable-find "fracjson"))
+  (with-temp-buffer
+    (setq buffer-file-name "/tmp/keyamp.json")
+    (insert "{invalid")
+    (should-error (json-pretty-compact) :type 'user-error)
+    (should (string-equal (buffer-string) "{invalid"))))
+
+(ert-deftest keycom-test-json-pretty-compact-non-json ()
+  (with-temp-buffer
+    (setq buffer-file-name "/tmp/keyamp.txt")
+    (insert "{}")
+    (should-error (json-pretty-compact) :type 'user-error)
+    (should (string-equal (buffer-string) "{}"))))
 
 (ert-deftest keycom-test-bounds-of-block ()
   (with-temp-buffer

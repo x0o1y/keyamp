@@ -1,0 +1,39 @@
+[
+  [
+    { "$": "case_selector", "lower": { "label": "Й", "code": 1081, "labelFlags": 65536 }, "upper": { "label": "Й", "code": 1049, "labelFlags": 65536 } },
+    { "$": "case_selector", "lower": { "label": "Ц", "code": 1094, "labelFlags": 65536 }, "upper": { "label": "Ц", "code": 1062, "labelFlags": 65536 } },
+    { "$": "case_selector", "lower": { "label": "У", "code": 1091, "labelFlags": 65536 }, "upper": { "label": "У", "code": 1059, "labelFlags": 65536 } },
+    { "$": "case_selector", "lower": { "label": "К", "code": 1082, "labelFlags": 65536 }, "upper": { "label": "К", "code": 1050, "labelFlags": 65536 } },
+    { "$": "case_selector", "lower": { "label": "Е", "code": 1077, "labelFlags": 65536 }, "upper": { "label": "Е", "code": 1045, "labelFlags": 65536 } },
+    { "$": "case_selector", "lower": { "label": "Н", "code": 1085, "labelFlags": 65536 }, "upper": { "label": "Н", "code": 1053, "labelFlags": 65536 } },
+    { "$": "case_selector", "lower": { "label": "Г", "code": 1075, "labelFlags": 65536 }, "upper": { "label": "Г", "code": 1043, "labelFlags": 65536 } },
+    { "$": "case_selector", "lower": { "label": "Ш", "code": 1096, "labelFlags": 65536, "popup": { "main": { "code": -11000, "label": "repeat" } } }, "upper": { "label": "Ш", "code": 1064, "labelFlags": 65536, "popup": { "main": { "code": -11000, "label": "repeat" } } } },
+    { "$": "case_selector", "lower": { "label": "Щ", "code": 1097, "labelFlags": 65536 }, "upper": { "label": "Щ", "code": 1065, "labelFlags": 65536 } },
+    { "$": "case_selector", "lower": { "label": "З", "code": 1079, "labelFlags": 65536 }, "upper": { "label": "З", "code": 1047, "labelFlags": 65536 } },
+    { "$": "case_selector", "lower": { "label": "Х", "code": 1093, "labelFlags": 65536 }, "upper": { "label": "Х", "code": 1061, "labelFlags": 65536 } }
+  ],
+  [
+    { "$": "case_selector", "lower": { "label": "Ф", "code": 1092, "labelFlags": 65536 }, "upper": { "label": "Ф", "code": 1060, "labelFlags": 65536 } },
+    { "$": "case_selector", "lower": { "label": "Ы", "code": 1099, "labelFlags": 65536 }, "upper": { "label": "Ы", "code": 1067, "labelFlags": 65536 } },
+    { "$": "case_selector", "lower": { "label": "В", "code": 1074, "labelFlags": 65536, "popup": { "main": { "code": -11000, "label": "repeat" } } }, "upper": { "label": "В", "code": 1042, "labelFlags": 65536, "popup": { "main": { "code": -11000, "label": "repeat" } } } },
+    { "$": "case_selector", "lower": { "label": "А", "code": 1072, "labelFlags": 65536 }, "upper": { "label": "А", "code": 1040, "labelFlags": 65536 } },
+    { "$": "case_selector", "lower": { "label": "П", "code": 1087, "labelFlags": 65536 }, "upper": { "label": "П", "code": 1055, "labelFlags": 65536 } },
+    { "$": "case_selector", "lower": { "label": "Р", "code": 1088, "labelFlags": 65536 }, "upper": { "label": "Р", "code": 1056, "labelFlags": 65536 } },
+    { "$": "case_selector", "lower": { "label": "О", "code": 1086, "labelFlags": 65536, "popup": { "main": { "code": -11000, "label": "repeat" } } }, "upper": { "label": "О", "code": 1054, "labelFlags": 65536, "popup": { "main": { "code": -11000, "label": "repeat" } } } },
+    { "$": "case_selector", "lower": { "label": "Л", "code": 1083, "labelFlags": 65536, "popup": { "main": { "code": -11000, "label": "repeat" } } }, "upper": { "label": "Л", "code": 1051, "labelFlags": 65536, "popup": { "main": { "code": -11000, "label": "repeat" } } } },
+    { "$": "case_selector", "lower": { "label": "Д", "code": 1076, "labelFlags": 65536, "popup": { "main": { "code": -11000, "label": "repeat" } } }, "upper": { "label": "Д", "code": 1044, "labelFlags": 65536, "popup": { "main": { "code": -11000, "label": "repeat" } } } },
+    { "$": "case_selector", "lower": { "label": "Ж", "code": 1078, "labelFlags": 65536 }, "upper": { "label": "Ж", "code": 1046, "labelFlags": 65536 } },
+    { "$": "case_selector", "lower": { "label": "Э", "code": 1101, "labelFlags": 65536 }, "upper": { "label": "Э", "code": 1069, "labelFlags": 65536 } }
+  ],
+  [
+    { "$": "case_selector", "lower": { "label": "Я", "code": 1103, "labelFlags": 65536 }, "upper": { "label": "Я", "code": 1071, "labelFlags": 65536 } },
+    { "$": "case_selector", "lower": { "label": "Ч", "code": 1095, "labelFlags": 65536 }, "upper": { "label": "Ч", "code": 1063, "labelFlags": 65536 } },
+    { "$": "case_selector", "lower": { "label": "С", "code": 1089, "labelFlags": 65536 }, "upper": { "label": "С", "code": 1057, "labelFlags": 65536 } },
+    { "$": "case_selector", "lower": { "label": "М", "code": 1084, "labelFlags": 65536 }, "upper": { "label": "М", "code": 1052, "labelFlags": 65536 } },
+    { "$": "case_selector", "lower": { "label": "И", "code": 1080, "labelFlags": 65536 }, "upper": { "label": "И", "code": 1048, "labelFlags": 65536 } },
+    { "$": "case_selector", "lower": { "label": "Т", "code": 1090, "labelFlags": 65536 }, "upper": { "label": "Т", "code": 1058, "labelFlags": 65536 } },
+    { "$": "case_selector", "lower": { "label": "Ь", "code": 1100, "labelFlags": 65536 }, "upper": { "label": "Ь", "code": 1068, "labelFlags": 65536 } },
+    { "$": "case_selector", "lower": { "label": "Б", "code": 1073, "labelFlags": 65536 }, "upper": { "label": "Б", "code": 1041, "labelFlags": 65536 } },
+    { "$": "case_selector", "lower": { "label": "Ю", "code": 1102, "labelFlags": 65536 }, "upper": { "label": "Ю", "code": 1070, "labelFlags": 65536 } }
+  ]
+]

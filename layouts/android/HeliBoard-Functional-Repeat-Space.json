@@ -1,0 +1,14 @@
+[
+  [
+    { "label": "shift", "width": 0.15 },
+    { "type": "placeholder" },
+    { "label": "delete", "width": 0.15 }
+  ],
+  [
+    { "label": "symbol_alpha", "width": 0.15 },
+    { "label": "comma", "labelFlags": 1073741824 },
+    { "label": "space", "popup": { "main": { "code": -11000, "label": "repeat" } } },
+    { "label": "period", "labelFlags": 1073741824 },
+    { "label": "action", "type": "function", "width": 0.15, "labelFlags": 1073741824 }
+  ]
+]

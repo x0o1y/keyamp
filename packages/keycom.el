@@ -1277,7 +1277,7 @@ Cycle in this order: Init Caps, ALL CAPS, all lower. Calculates initial state."
       (goto-char (point-max)))
     (skip-chars-forward " \n\t")))
 
-(defun title-case-region-or-line (&optional Begin End)
+(defun title-case-region (&optional Begin End)
   "Title case text between nearest brackets, or current line or selection.
 Capitalize first letter of each word, except words like {to, of, the,
 a, in, or, and, …}. If a word already contains cap letters such as
@@ -2583,9 +2583,13 @@ for elisp files."
       (setq path
             (replace-regexp-in-string "^file://" ""
                                       (replace-regexp-in-string ":\\'" "" input)))
+      (when (string-match "\\`(\\(https?://.*\\))[,.;:!?]?\\'" path)
+        (setq path (match-string 1 path)))
       (when-let ((home (getenv "HOME"))
                  ((or (string= path "$HOME")
-                      (string-prefix-p "$HOME/" path))))
+                      (string= path "$home")
+                      (string-prefix-p "$HOME/" path)
+                      (string-prefix-p "$home/" path))))
         (setq path (concat (directory-file-name home) (substring path (length "$HOME")))))
       (if (string-match "/ssh" path) ; No time to make it nice, case for TRAMP
           (if (string-match "^\\`\\(.+?\\):\\([0-9]+\\)\\(:[0-9]+\\)?\\'" path)
@@ -2839,7 +2843,8 @@ If the current buffer is not associated with a file nor dired, nothing's done."
   "Call `occur' on current word."
   (interactive)
   (setq defer-timer nil)
-  (occur (cur-word))
+  (let ((search-upper-case nil))
+    (occur (cur-word)))
   (enlarge-window-split))
 
 (defun search-string ()
@@ -3316,7 +3321,7 @@ Custom, added prompt on event read."
     (command-execute 'ignore)))
   (when (eq major-mode 'org-mode)
     (beginning-of-line)
-    (title-case-region-or-line)))
+    (title-case-region)))
 
 (defun toggle-gnus ()
   "Toggle gnus."
@@ -3485,6 +3490,29 @@ This checks in turn:
         (json-pretty-print-buffer)
         (message "%s" "Pretty print JSON"))
     (user-error "%s" "Not JSON")))
+
+(defun json-pretty-compact ()
+  "Format the current JSON file compactly with FracturedJson."
+  (interactive)
+  (unless (string-equal (file-name-extension (or buffer-file-name "")) "json")
+    (user-error "Not JSON"))
+  (let ((program (or (executable-find "fracjson")
+                     (user-error "fracjson not found")))
+        (source (current-buffer)))
+    (with-temp-buffer
+      (let ((output (current-buffer)))
+        (unless (eql 0 (with-current-buffer source
+                         (save-restriction
+                           (widen)
+                           (call-process-region
+                            (point-min) (point-max) program nil output nil
+                            "--no-config" "--table" "-1" "--length" "120"
+                            "--inline" "3" "--indent" "2"))))
+          (user-error "fracjson failed; buffer unchanged"))
+        (with-current-buffer source
+          (save-restriction
+            (widen)
+            (replace-buffer-contents output)))))))
 
 (defun org-insert-source-code ()
   "Insert source code block."

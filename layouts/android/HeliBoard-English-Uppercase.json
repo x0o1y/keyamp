@@ -1,0 +1,34 @@
+[
+  [
+    { "$": "case_selector", "lower": { "label": "Q", "code": 113, "labelFlags": 65536 }, "upper": { "label": "Q", "code": 81, "labelFlags": 65536 } },
+    { "$": "case_selector", "lower": { "label": "W", "code": 119, "labelFlags": 65536 }, "upper": { "label": "W", "code": 87, "labelFlags": 65536 } },
+    { "$": "case_selector", "lower": { "label": "E", "code": 101, "labelFlags": 65536 }, "upper": { "label": "E", "code": 69, "labelFlags": 65536 } },
+    { "$": "case_selector", "lower": { "label": "R", "code": 114, "labelFlags": 65536 }, "upper": { "label": "R", "code": 82, "labelFlags": 65536 } },
+    { "$": "case_selector", "lower": { "label": "T", "code": 116, "labelFlags": 65536 }, "upper": { "label": "T", "code": 84, "labelFlags": 65536 } },
+    { "$": "case_selector", "lower": { "label": "Y", "code": 121, "labelFlags": 65536 }, "upper": { "label": "Y", "code": 89, "labelFlags": 65536 } },
+    { "$": "case_selector", "lower": { "label": "U", "code": 117, "labelFlags": 65536 }, "upper": { "label": "U", "code": 85, "labelFlags": 65536 } },
+    { "$": "case_selector", "lower": { "label": "I", "code": 105, "labelFlags": 65536, "popup": { "main": { "code": -11000, "label": "repeat" } } }, "upper": { "label": "I", "code": 73, "labelFlags": 65536, "popup": { "main": { "code": -11000, "label": "repeat" } } } },
+    { "$": "case_selector", "lower": { "label": "O", "code": 111, "labelFlags": 65536 }, "upper": { "label": "O", "code": 79, "labelFlags": 65536 } },
+    { "$": "case_selector", "lower": { "label": "P", "code": 112, "labelFlags": 65536 }, "upper": { "label": "P", "code": 80, "labelFlags": 65536 } }
+  ],
+  [
+    { "$": "case_selector", "lower": { "label": "A", "code": 97, "labelFlags": 65536 }, "upper": { "label": "A", "code": 65, "labelFlags": 65536 } },
+    { "$": "case_selector", "lower": { "label": "S", "code": 115, "labelFlags": 65536 }, "upper": { "label": "S", "code": 83, "labelFlags": 65536 } },
+    { "$": "case_selector", "lower": { "label": "D", "code": 100, "labelFlags": 65536, "popup": { "main": { "code": -11000, "label": "repeat" } } }, "upper": { "label": "D", "code": 68, "labelFlags": 65536, "popup": { "main": { "code": -11000, "label": "repeat" } } } },
+    { "$": "case_selector", "lower": { "label": "F", "code": 102, "labelFlags": 65536 }, "upper": { "label": "F", "code": 70, "labelFlags": 65536 } },
+    { "$": "case_selector", "lower": { "label": "G", "code": 103, "labelFlags": 65536 }, "upper": { "label": "G", "code": 71, "labelFlags": 65536 } },
+    { "$": "case_selector", "lower": { "label": "H", "code": 104, "labelFlags": 65536 }, "upper": { "label": "H", "code": 72, "labelFlags": 65536 } },
+    { "$": "case_selector", "lower": { "label": "J", "code": 106, "labelFlags": 65536, "popup": { "main": { "code": -11000, "label": "repeat" } } }, "upper": { "label": "J", "code": 74, "labelFlags": 65536, "popup": { "main": { "code": -11000, "label": "repeat" } } } },
+    { "$": "case_selector", "lower": { "label": "K", "code": 107, "labelFlags": 65536, "popup": { "main": { "code": -11000, "label": "repeat" } } }, "upper": { "label": "K", "code": 75, "labelFlags": 65536, "popup": { "main": { "code": -11000, "label": "repeat" } } } },
+    { "$": "case_selector", "lower": { "label": "L", "code": 108, "labelFlags": 65536, "popup": { "main": { "code": -11000, "label": "repeat" } } }, "upper": { "label": "L", "code": 76, "labelFlags": 65536, "popup": { "main": { "code": -11000, "label": "repeat" } } } }
+  ],
+  [
+    { "$": "case_selector", "lower": { "label": "Z", "code": 122, "labelFlags": 65536 }, "upper": { "label": "Z", "code": 90, "labelFlags": 65536 } },
+    { "$": "case_selector", "lower": { "label": "X", "code": 120, "labelFlags": 65536 }, "upper": { "label": "X", "code": 88, "labelFlags": 65536 } },
+    { "$": "case_selector", "lower": { "label": "C", "code": 99, "labelFlags": 65536 }, "upper": { "label": "C", "code": 67, "labelFlags": 65536 } },
+    { "$": "case_selector", "lower": { "label": "V", "code": 118, "labelFlags": 65536 }, "upper": { "label": "V", "code": 86, "labelFlags": 65536 } },
+    { "$": "case_selector", "lower": { "label": "B", "code": 98, "labelFlags": 65536 }, "upper": { "label": "B", "code": 66, "labelFlags": 65536 } },
+    { "$": "case_selector", "lower": { "label": "N", "code": 110, "labelFlags": 65536 }, "upper": { "label": "N", "code": 78, "labelFlags": 65536 } },
+    { "$": "case_selector", "lower": { "label": "M", "code": 109, "labelFlags": 65536 }, "upper": { "label": "M", "code": 77, "labelFlags": 65536 } }
+  ]
+]

@@ -1217,7 +1217,7 @@ Huge amount of bindings from `keyamp-script-leader-map' goes here."
     ("x" . next-eww-buf)
     ("c" . copy-all)
     ("v" . tasks)
-    ("b" . title-case-region-or-line)
+    ("b" . title-case-region)
 
     ;; Right leader right half
     ("6" . toggle-case-fold-search)
@@ -1596,7 +1596,7 @@ Huge amount of bindings from `keyamp-script-leader-map' goes here."
       '(("C-q"    . toggle-messages) ("C-t"     . delete-other-windows)
         ("<left>" . alt-buf)         ("<right>" . screen-home-toggle)
         ("<up>"   . page-dn-half)    ("<down>"  . page-up-half)))
-    (keyamp--set keymap '(keyamp-escape) nil nil nil 1)))
+    (keyamp--set keymap '(keyamp-escape) nil nil nil 2)))
 
 (with-sparse-keymap
   ;; Leader layer to become transient main. Base map for next leaders adjustment
@@ -1639,7 +1639,7 @@ Huge amount of bindings from `keyamp-script-leader-map' goes here."
       shrink-window-horizontally enlarge-window-horizontally
       enlarge-window-any         shrink-window-any
       volume-decrease            volume-increase
-      org-agenda-tasks           split-window-horizontally)))
+      split-window-horizontally)))
 
 (with-sparse-keymap
   ;; DEL/SPC to switch other window after split as a result of the commands.
@@ -1684,7 +1684,7 @@ Huge amount of bindings from `keyamp-script-leader-map' goes here."
   (keyamp--remap keymap
     '((open-line . tasks) (newline   . next-buf)
       (back-char . tasks) (forw-char . prev-buf)))
-  (keyamp--set keymap '(tasks org-agenda-tasks)))
+  (keyamp--set keymap '(tasks)))
 
 (with-sparse-keymap
   (keyamp--remap keymap '((open-line . prev-buf) (newline . config)))
@@ -2206,11 +2206,11 @@ keyboard ASCII CHAR."
       (cut-line             . dired-kill-subdir)
       (cut-text-block       . ignore)
       (dired-jump           . dired-subtree-toggle)
-      (copy-text-block      . dired-decrypt)
-      (calc                 . ignore)
+      (copy-text-block      . dired-encrypt)
+      (calc                 . dired-decrypt)
       (paste-or-prev        . dired-create-directory)
       (toggle-case          . dired-sort)
-      (toggle-prev-case     . dired-encrypt)
+      (toggle-prev-case     . ignore)
       (copy-to-r1           . dired-do-copy)
       (paste-from-r1        . dired-do-rename)
       (mark-whole-buffer    . dired-toggle-marks)))
@@ -2638,45 +2638,44 @@ keyboard ASCII CHAR."
   (keyamp--map vterm-mode-map '(("C-t" . vterm-send-tab)))
   (keyamp--remap vterm-mode-map
     '(;; Left half
-      (insert-space-before       . vt-enter-copy-mode)    ; Q
-      (periodic-chart            . vt-split-view)         ; SPC 1
-      (backward-del-word         . vt-shell-vi-cmd)       ; W Sync point or do modify if in transient
-      (undo                      . vterm-undo)            ; E
-      (del-word                  . vt-shell-vi-cmd)       ; R Sync point or do modify if in transient
-      (query-replace             . vt-vi)                 ; SPC R Activate vi mode (TUI)
-      (cut-text-block            . vt-conn-reconnect)     ; T
-      (copy-text-block           . vt-sftp-jump)          ; SPC T
-      (shrink-whitespaces        . vt-conn-localhost)     ; A
-      (kill-line                 . vt-close-window)       ; SPC A
-      (open-line                 . vt-prev-window)        ; S
-      (del-back                  . vt-shell-vi-cmd)       ; D Sync point or do modify if in transient
-      (newline                   . vt-next-window)        ; F
-      (new-empty-buffer          . vt-new-window)         ; SPC G
-      (toggle-comment            . vterm-read-send-key)   ; Z
-      (cut-line                  . vterm-clear)           ; X
-      (paste-or-prev             . vterm-yank)            ; V
-      (paste-from-r1             . paste-from-r1-vt)      ; SPC V
-      (toggle-case               . vt-position)           ; B
-      (toggle-prev-case          . vt-command-copy)       ; SPC B
-      (revert-buffer             . prev-vterm-buf)        ; SPC 3
-      (select-word               . vt-shell-vi-cmd-up)    ; SPC SPC
-      (org-ctrl-c-ctrl-c         . vterm-send-c-c)        ; SPC W
+      (insert-space-before . vt-enter-copy-mode)    ; Q
+      (periodic-chart      . vt-split-view)         ; SPC 1
+      (backward-del-word   . vt-shell-vi-cmd)       ; W Sync point or do modify if in transient
+      (undo                . vterm-undo)            ; E
+      (del-word            . vt-shell-vi-cmd)       ; R Sync point or do modify if in transient
+      (query-replace       . vt-vi)                 ; SPC R Activate vi mode (TUI)
+      (cut-text-block      . vt-conn-reconnect)     ; T
+      (copy-text-block     . vt-sftp-jump)          ; SPC T
+      (shrink-whitespaces  . vt-conn-localhost)     ; A
+      (kill-line           . vt-close-window)       ; SPC A
+      (open-line           . vt-prev-window)        ; S
+      (del-back            . vt-shell-vi-cmd)       ; D Sync point or do modify if in transient
+      (newline             . vt-next-window)        ; F
+      (new-empty-buffer    . vt-new-window)         ; SPC G
+      (toggle-comment      . vterm-read-send-key)   ; Z
+      (cut-line            . vterm-clear)           ; X
+      (paste-or-prev       . vterm-yank)            ; V
+      (paste-from-r1       . paste-from-r1-vt)      ; SPC V
+      (toggle-case         . vt-position)           ; B
+      (toggle-prev-case    . vt-command-copy)       ; SPC B
+      (revert-buffer       . prev-vterm-buf)        ; SPC 3
+      (select-word         . vt-shell-vi-cmd-up)    ; SPC SPC
+      (org-ctrl-c-ctrl-c   . vterm-send-c-c)        ; SPC W
 
       ;; Right half
-      (page-up-half              . vt-page-up-half)       ; DEL H
-      (page-dn-half              . vt-page-dn-half)       ; DEL ;
-      (dired-jump                . vt-conn-tramp)         ; DEL M
-      (copy-all                  . vt-copy)               ; DEL C
-      (title-case-region-or-line . vt-sudo-password-copy) ; DEL B
-      (back-char                 . vterm-left)
-      (forw-char                 . vterm-right)
-      (up-line                   . vterm-up)
-      (down-line                 . vterm-down)))
+      (page-up-half        . vt-page-up-half)       ; DEL H
+      (page-dn-half        . vt-page-dn-half)       ; DEL ;
+      (dired-jump          . vt-conn-tramp)         ; DEL M
+      (copy-all            . vt-copy)               ; DEL C
+      (title-case-region   . vt-sudo-password-copy) ; DEL B
+      (back-char           . vterm-left)
+      (forw-char           . vterm-right)
+      (up-line             . vterm-up)
+      (down-line           . vterm-down)))
 
   (keyamp--map-tab vterm-copy-mode-map vterm-send-tab)
   (keyamp--map-backtab vterm-copy-mode-map nil)
 
-  ;; (keyamp--map vterm-copy-mode-map '(("C-t" . vterm-send-tab)))
   (keyamp--remap vterm-copy-mode-map
     '(;; Left half
       (insert-space-before . vt-exit-copy-mode)      ; Q
@@ -2709,7 +2708,7 @@ keyboard ASCII CHAR."
       (page-dn-half        . vt-page-dn-half)        ; DEL ;
       (dired-jump          . vt-conn-tramp)          ; DEL M
       (copy-all            . vt-copy)                ; DEL C
-      (password-store      . vt-sudo-password-copy)  ; DEL Y
+      (title-case-region   . vt-sudo-password-copy)  ; DEL B
       ))
 
   ;; Sync point on insert
@@ -3100,7 +3099,7 @@ keyboard ASCII CHAR."
 (with-eval-after-load 'gnus-sum
   (push 'gnus-summary-mode keyamp-lines-move-modes)
   (keyamp--map gnus-summary-mode-map '(("<mouse-1>" . gnus-summary-scroll-up)))
-  (keyamp--map-tab gnus-summary-mode-map nil)
+  (keyamp--map-tab gnus-summary-mode-map toggle-gnus)
   (keyamp--map-backtab gnus-summary-mode-map nil)
   (keyamp--remap gnus-summary-mode-map
     '((previous-line . up-line-rev)
@@ -3124,8 +3123,7 @@ keyboard ASCII CHAR."
     (with-sparse-keymap
       (keyamp--map-leader keymap '(page-dn-half . down-line))
       (keyamp--remap keymap
-        '((open-line . gnus-summary-prev-group) (newline . gnus-summary-next-group)
-          (up-line   . page-dn-half)))
+        '((open-line . gnus-summary-prev-group) (newline . gnus-summary-next-group)))
       (keyamp--set keymap
         '(gnus-summary-prev-group gnus-summary-next-group gnus-delete-window-article))
       (keyamp--set keymap '(screen-home-left))
@@ -3514,7 +3512,6 @@ keyboard ASCII CHAR."
                  next-buf                                t
                  occur-cur-word                          t
                  open-in-external-app                    t
-                 org-agenda-tasks                        t
                  prev-eww-buf                            t
                  prev-eshell-buf                         t
                  prev-dired-buf                          t
@@ -3608,7 +3605,7 @@ keyboard ASCII CHAR."
                  shrink-whitespaces                      t
                  sort-lines-key-value                    t
                  space-to-newline                        t
-                 title-case-region-or-line               t
+                 title-case-region                       t
                  todo                                    t
                  toggle-comment                          t
                  toggle-case                             t
