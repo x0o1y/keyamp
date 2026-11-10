@@ -38,11 +38,11 @@
   (when (= (line-number-at-pos) 1)
     (forward-line (count-lines (point-min) (point-max)))))
 
-(defun down-line-wrap (fun &rest r)
+(defun down-line-wrap (Fun &rest R)
   "On the last line go to the first line of buffer."
   (if (= (line-number-at-pos) (1+ (count-lines (point-min) (point-max))))
       (forward-line (- (count-lines (point-min) (point-max))))
-    (apply fun r)))
+    (apply Fun R)))
 
 (defvar before-last-command-event nil "Before `last-command-event'.")
 
@@ -616,28 +616,28 @@ and others.")
 (defconst punctuation-regex "[!?\".,`'#$%&*+:;=@^|~]+"
   "A regex string for the purpose of moving cursor to a punctuation.")
 
-(defun backward-punct (&optional n)
+(defun backward-punct (&optional N)
   "Move cursor to the previous occurrence of punctuation.
 See `forward-punct'"
   (interactive "p")
   (let ((p (point)))
-    (re-search-backward punctuation-regex nil t n)
+    (re-search-backward punctuation-regex nil t N)
     (forward-char)
     (when (eq p (point))
       (backward-char)
-      (re-search-backward punctuation-regex nil t n)
+      (re-search-backward punctuation-regex nil t N)
       (forward-char))))
 
-(defun forward-punct (&optional n)
+(defun forward-punct (&optional N)
   "Move cursor to the next occurrence of punctuation.
 The list of punctuations to jump to is defined by `punctuation-regex'."
   (interactive "p")
   (let ((p (point)))
-    (re-search-forward punctuation-regex nil t n)
+    (re-search-forward punctuation-regex nil t N)
     (backward-char)
     (when (eq p (point))
       (forward-char)
-      (re-search-forward punctuation-regex nil t n)
+      (re-search-forward punctuation-regex nil t N)
       (backward-char))))
 
 (defun backward-bracket ()
@@ -1199,10 +1199,10 @@ ToChars is similar, with a special value of \" none \", replace by empty string.
                                 (match-beginning 0) (match-end 0)) 'face 'highlight)
                   (replace-match toR t t))))))))))
 
-(defun string-is-capitalized (String)
-  "Check if STRING capitalized."
+(defun string-is-capitalized (Str)
+  "Check if STR capitalized."
   (let ((case-fold-search nil))
-    (equal (upcase String) String)))
+    (equal (upcase Str) Str)))
 
 (defun toggle-case ()
   "Toggle the letter case of current word or selection.
@@ -1277,7 +1277,7 @@ Cycle in this order: Init Caps, ALL CAPS, all lower. Calculates initial state."
       (goto-char (point-max)))
     (skip-chars-forward " \n\t")))
 
-(defun title-case-region (&optional Begin End)
+(defun title-case-region (&optional Beg End)
   "Title case text between nearest brackets, or current line or selection.
 Capitalize first letter of each word, except words like {to, of, the,
 a, in, or, and, …}. If a word already contains cap letters such as
@@ -1286,8 +1286,8 @@ When called in a Elisp program, Begin End are region boundaries."
   (interactive)
   (let* ((skipChars "^\"<>(){}[]")
          (p0 (point))
-         (p1 (if Begin
-                 Begin
+         (p1 (if Beg
+                 Beg
                (if (region-active-p)
                    (region-beginning)
                  (skip-chars-backward skipChars (line-beginning-position))
@@ -1419,27 +1419,27 @@ This command does the inverse of `fill-paragraph'."
   (let ((fill-column 90002000))
     (fill-paragraph)))
 
-(defun unfill-region (Begin End)
+(defun unfill-region (Beg End)
   "Replace newline chars in region by single spaces.
 This command does the inverse of `fill-region'."
   (interactive "r")
   (let ((fill-column 90002000))
-    (fill-region Begin End)))
+    (fill-region Beg End)))
 
-(defun change-newline-chars-to-one (Begin End)
+(defun change-newline-chars-to-one (Beg End)
   "Replace newline char sequence by just one."
   (interactive "r")
   (save-excursion
     (save-restriction
-      (narrow-to-region Begin End)
+      (narrow-to-region Beg End)
       (goto-char (point-min))
       (while (re-search-forward "\n\n+" nil 1) (replace-match "\n")))))
 
-(defun reformat-whitespaces-to-one-space (Begin End)
+(defun reformat-whitespaces-to-one-space (Beg End)
   "Replace whitespaces by one space."
   (interactive "r")
   (save-restriction
-      (narrow-to-region Begin End)
+      (narrow-to-region Beg End)
       (goto-char (point-min))
       (while (search-forward "\n" nil 1) (replace-match " "))
       (goto-char (point-min))
@@ -1448,13 +1448,13 @@ This command does the inverse of `fill-region'."
       (while (re-search-forward " +" nil 1) (replace-match " "))
       (goto-char (point-max))))
 
-(defun reformat-to-multi-lines (&optional Begin End)
+(defun reformat-to-multi-lines (&optional Beg End)
   "Replace spaces by a newline at ~70 chars, on current block or selection.
 If `universal-argument' is called first, ask user for max width."
   (interactive)
   (let (p1 p2 (minlen fill-column))
-    (if (and Begin End)
-        (setq p1 Begin p2 End)
+    (if (and Beg End)
+        (setq p1 Beg p2 End)
       (let ((bds (get-bounds-of-block-or-region)))
         (setq p1 (car bds) p2 (cdr bds))))
     (save-excursion
@@ -1523,12 +1523,12 @@ Move cursor to the beginning of next text block."
       (while (re-search-forward " +" nil t)
         (replace-match "\n")))))
 
-(defun slash-to-backslash (&optional Begin End)
+(defun slash-to-backslash (&optional Beg End)
   "Replace slash by backslash on current line or region."
   (interactive)
   (let (p1 p2)
-    (if (and Begin End)
-        (setq p1 Begin p2 End)
+    (if (and Beg End)
+        (setq p1 Beg p2 End)
       (if (region-active-p)
           (setq p1 (region-beginning) p2 (region-end))
         (setq p1 (line-beginning-position) p2 (line-end-position))))
@@ -1538,12 +1538,12 @@ Move cursor to the beginning of next text block."
         (goto-char (point-min))
         (while (search-forward "/" nil t) (replace-match "\\\\"))))))
 
-(defun backslash-to-slash (&optional Begin End)
+(defun backslash-to-slash (&optional Beg End)
   "Replace backslash by slash on current line or region."
   (interactive)
   (let (p1 p2)
-    (if (and Begin End)
-        (setq p1 Begin p2 End)
+    (if (and Beg End)
+        (setq p1 Beg p2 End)
       (if (region-active-p)
           (setq p1 (region-beginning) p2 (region-end))
         (setq p1 (line-beginning-position) p2 (line-end-position))))
@@ -1553,12 +1553,12 @@ Move cursor to the beginning of next text block."
         (goto-char (point-min))
         (while (search-forward "\\" nil t) (replace-match "/"))))))
 
-(defun double-backslash-to-single (&optional Begin End)
+(defun double-backslash-to-single (&optional Beg End)
   "Replace double backslash by single backslash on current line or region."
   (interactive)
   (let (p1 p2)
-    (if (and Begin End)
-        (setq p1 Begin p2 End)
+    (if (and Beg End)
+        (setq p1 Beg p2 End)
       (if (region-active-p)
           (setq p1 (region-beginning) p2 (region-end))
         (setq p1 (line-beginning-position) p2 (line-end-position))))
@@ -1568,12 +1568,12 @@ Move cursor to the beginning of next text block."
         (goto-char (point-min))
         (while (search-forward "\\\\"  nil t) (replace-match "\\\\"))))))
 
-(defun slash-to-double-backslash (&optional Begin End)
+(defun slash-to-double-backslash (&optional Beg End)
   "Replace slash by double backslash on current line or region."
   (interactive)
   (let (p1 p2)
-    (if (and Begin End)
-        (setq p1 Begin p2 End)
+    (if (and Beg End)
+        (setq p1 Beg p2 End)
       (if (region-active-p)
           (setq p1 (region-beginning) p2 (region-end))
         (setq p1 (line-beginning-position) p2 (line-end-position))))
@@ -1583,12 +1583,12 @@ Move cursor to the beginning of next text block."
         (goto-char (point-min))
         (while (search-forward "/" nil t) (replace-match "\\\\\\\\"))))))
 
-(defun double-backslash-to-slash (&optional Begin End)
+(defun double-backslash-to-slash (&optional Beg End)
   "Replace double backslash by slash on current line or region."
   (interactive)
   (let (p1 p2)
-    (if (and Begin End)
-        (setq p1 Begin p2 End)
+    (if (and Beg End)
+        (setq p1 Beg p2 End)
       (if (region-active-p)
           (setq p1 (region-beginning) p2 (region-end))
         (setq p1 (line-beginning-position) p2 (line-end-position))))
@@ -1613,7 +1613,7 @@ Move cursor to the beginning of next text block."
             (comment-or-uncomment-region lbp lep)
             (forward-line)))))))
 
-(defun quote-lines (Begin End QuoteL QuoteR Sep)
+(defun quote-lines (Beg End QuoteL QuoteR Sep)
   "Add quotes/brackets and separator (comma) to lines.
 Act on current block or selection.
 In lisp code, QuoteL QuoteR Sep are strings."
@@ -1648,7 +1648,7 @@ In lisp code, QuoteL QuoteR Sep are strings."
             ((string-equal sepChoice "other") (read-string "Enter separator:"))
             (t sepChoice)))
      (list p1 p2 quoteL quoteR sep)))
-  (let ((p1 Begin) (p2 End) (quoteL QuoteL) (quoteR QuoteR) (sep Sep))
+  (let ((p1 Beg) (p2 End) (quoteL QuoteL) (quoteR QuoteR) (sep Sep))
     (save-excursion
       (save-restriction
         (narrow-to-region p1 p2)
@@ -1663,7 +1663,7 @@ In lisp code, QuoteL QuoteR Sep are strings."
                 (throw 'EndReached t)
               (forward-char))))))))
 
-(defun escape-quotes (Begin End)
+(defun escape-quotes (Beg End)
   "Add slash before double quote in current line or selection.
 Double quote is codepoint 34.
 See also: `unescape-quotes'."
@@ -1673,11 +1673,11 @@ See also: `unescape-quotes'."
      (list (line-beginning-position) (line-end-position))))
   (save-excursion
     (save-restriction
-      (narrow-to-region Begin End)
+      (narrow-to-region Beg End)
       (goto-char (point-min))
       (while (search-forward "\"" nil t) (replace-match "\\\"" t t)))))
 
-(defun unescape-quotes (Begin End)
+(defun unescape-quotes (Beg End)
   "Replace  \\\" by \" in current line or selection. See also: `escape-quotes'."
   (interactive
    (if (region-active-p)
@@ -1685,11 +1685,11 @@ See also: `unescape-quotes'."
      (list (line-beginning-position) (line-end-position))))
   (save-excursion
     (save-restriction
-      (narrow-to-region Begin End)
+      (narrow-to-region Beg End)
       (goto-char (point-min))
       (while (search-forward "\\\"" nil t) (replace-match "\"" t t)))))
 
-(defun cycle-hyphen-lowline-space (&optional Begin End)
+(defun cycle-hyphen-lowline-space (&optional Beg End)
   "Cycle hyphen/lowline/space chars in selection or inside
 quote/bracket or line, in that order.
 
@@ -1708,8 +1708,8 @@ current line, work on that region;
             (nowState (if (eq last-command this-command)
                           (get 'cycle-hyphen-lowline-space 'state) 0))
             (changeTo (elt charArr nowState)))
-    (if (and Begin End)
-        (setq p1 Begin p2 End)
+    (if (and Beg End)
+        (setq p1 Beg p2 End)
       (if (region-active-p)
           (setq p1 (region-beginning) p2 (region-end))
         (let ((skipChars "^\"<>(){}[]"))
@@ -2296,7 +2296,8 @@ command, so that next buffer shown is a user buffer."
     (while (< i buf-count-limit)
       (if (or (not (eq major-mode 'vterm-mode))
               (string-equal (buffer-name) "*vterm clock*")
-              (string-equal (buffer-name) "*vterm localhost*"))
+              (string-equal (buffer-name) "*vterm localhost*")
+              (string-prefix-p " *vt localhost:" (buffer-name)))
           (progn
             (previous-buffer)
             (setq i (1+ i))
@@ -2315,7 +2316,8 @@ command, so that next buffer shown is a user buffer."
     (while (< i buf-count-limit)
       (if (or (not (eq major-mode 'vterm-mode))
               (string-equal (buffer-name) "*vterm clock*")
-              (string-equal (buffer-name) "*vterm localhost*"))
+              (string-equal (buffer-name) "*vterm localhost*")
+              (string-prefix-p " *vt localhost:" (buffer-name)))
           (progn
             (next-buffer)
             (setq i (1+ i))
@@ -2324,7 +2326,7 @@ command, so that next buffer shown is a user buffer."
         (setq i (1+ buf-count-limit))))
     (if (and (eq buf (current-buffer))
              (not (eq major-mode 'vterm-mode)))
-        (if-let ((buf (get-buffer "*vterm localhost*")))
+        (if-let* ((buf (get-buffer "*vterm localhost*")))
             (switch-to-buffer buf)
           (vterm))
       (if (or (eq (point) (point-min))
@@ -2411,7 +2413,7 @@ command, so that next buffer shown is a user buffer."
    (t
     (switch-to-buffer (other-buffer)))))
 
-(defun find-next-dir-file (&optional backward)
+(defun find-next-dir-file (&optional Backward)
   "Find the next file (by name) in the current directory.
 With prefix arg, find the previous file."
   (interactive "P")
@@ -2421,7 +2423,7 @@ With prefix arg, find the previous file."
                                 (sort (directory-files
                                        (file-name-directory file) t nil t)
                                       'string<)))
-           (pos (mod (+ (cl-position file files :test 'equal) (if backward -1 1))
+           (pos (mod (+ (cl-position file files :test 'equal) (if Backward -1 1))
                      (length files))))
       (find-file (nth pos files)))))
 
@@ -2585,11 +2587,11 @@ for elisp files."
                                       (replace-regexp-in-string ":\\'" "" input)))
       (when (string-match "\\`(\\(https?://.*\\))[,.;:!?]?\\'" path)
         (setq path (match-string 1 path)))
-      (when-let ((home (getenv "HOME"))
-                 ((or (string= path "$HOME")
-                      (string= path "$home")
-                      (string-prefix-p "$HOME/" path)
-                      (string-prefix-p "$home/" path))))
+      (when-let* ((home (getenv "HOME"))
+                  ((or (string= path "$HOME")
+                       (string= path "$home")
+                       (string-prefix-p "$HOME/" path)
+                       (string-prefix-p "$home/" path))))
         (setq path (concat (directory-file-name home) (substring path (length "$HOME")))))
       (if (string-match "/ssh" path) ; No time to make it nice, case for TRAMP
           (if (string-match "^\\`\\(.+?\\):\\([0-9]+\\)\\(:[0-9]+\\)?\\'" path)
@@ -2793,9 +2795,9 @@ If the current buffer is not associated with a file nor dired, nothing's done."
 
 (defun save-buffer-silent ()
   "Save buffer without message."
-  (when-let ((inhibit-message t)
-             ((not (minibufferp)))
-             ((buffer-file-name)))
+  (when-let* ((inhibit-message t)
+              ((not (minibufferp)))
+              ((buffer-file-name)))
     (save-buffer)))
 
 (defun save-buffer-silent-defer ()
@@ -3145,9 +3147,7 @@ before actually send the cd command."
     (switch-to-buffer vt-buffer)
     (when (or (eq (point) (point-min))
               (eq (point) (line-beginning-position)))
-      (vterm-reset-cursor-point))
-    (when (fboundp 'vt-position)
-      (vt-position)))
+      (vterm-reset-cursor-point)))
    (t
     (next-vterm-buf))))
 
@@ -3290,7 +3290,7 @@ Custom, added prompt on event read."
 (defun downloads ()
   "Go to downloads or temp."
   (interactive)
-  (if-let ((tmp (concat user-emacs-directory "temp/"))
+  (if-let* ((tmp (concat user-emacs-directory "temp/"))
            ((equal (replace-regexp-in-string (getenv "HOME") "~" default-directory)
                    downloads-dir))
            ((eq major-mode 'dired-mode)))
@@ -3326,23 +3326,27 @@ Custom, added prompt on event read."
 (defun toggle-gnus ()
   "Toggle gnus."
   (interactive)
-  (if (and (boundp onlinep)
-           onlinep) ; Need own online predicate
-      (progn
-        (when (display-graphic-p)
-          (make-frame-command)
-          (other-frame 1))
-        (if (get-buffer "*Group*")
-            (switch-to-buffer "*Group*")
-          (gnus)
-          (unless (display-graphic-p)
-            (gnus-nnews-inbox))))
-    (message "%s" "Offline")))
+  (let ((summaryp (derived-mode-p 'gnus-summary-mode)))
+    (if (and (boundp onlinep)
+             onlinep) ; Need own online predicate
+        (progn
+          (when (display-graphic-p)
+            (make-frame-command)
+            (other-frame 1))
+          (if (get-buffer "*Group*")
+              (progn
+                (switch-to-buffer "*Group*")
+                (when summaryp
+                  (gnus-group-list-groups)))
+            (gnus)
+            (unless (display-graphic-p)
+              (gnus-nnews-inbox))))
+      (message "%s" "Offline"))))
 
 (defun password-store ()
   "Go to password store."
   (interactive)
-  (if-let ((store "~/.password-store")
+  (if-let* ((store "~/.password-store")
            ((file-exists-p store)))
       (find-file store)
     (message "%s %s" store "not found")))
@@ -3353,7 +3357,7 @@ Custom, added prompt on event read."
   (let ((file ".sql"))
     (if (string-match (concat "^\\" file) (buffer-name))
         (toggle-sql-type)
-      (if-let ((sql (concat "~/" file))
+      (if-let* ((sql (concat "~/" file))
                ((file-exists-p sql)))
           (find-file sql)
         (message "%s %s" sql "not found")))))
@@ -3512,7 +3516,7 @@ This checks in turn:
         (with-current-buffer source
           (save-restriction
             (widen)
-            (replace-buffer-contents output)))))))
+            (replace-region-contents (point-min) (point-max) output)))))))
 
 (defun org-insert-source-code ()
   "Insert source code block."
@@ -3571,22 +3575,22 @@ before selection. This fun to be run as before advice for move fun."
   (when (memq last-command '(select-word select-quote))
     (del-back)))
 
-(defun lookup-around (fun &rest r)
+(defun lookup-around (Fun &rest R)
   "Lookup selection if buffer is read only and last command `select-word'.
 Use as around advice e.g. for mouse left click after double click."
   (if (and (eq last-command 'select-word) buffer-read-only)
       (progn
         (return-before)
         (lookup-web))
-    (apply fun r)))
+    (apply Fun R)))
 
-(defun translate-around (fun &rest r)
+(defun translate-around (Fun &rest R)
   "Translate selection if buffer is read only and in eww."
   (if (and (eq major-mode 'eww-mode) buffer-read-only)
       (progn
         (translate)
         (setq this-command 'down-line))
-    (apply fun r)))
+    (apply Fun R)))
 
 (defun quit ()
   "Quit."
@@ -3595,11 +3599,11 @@ Use as around advice e.g. for mouse left click after double click."
     ;; (save-buffers-kill-terminal))
   (save-buffers-kill-terminal))
 
-(defun mouse-3 (e)
+(defun mouse-3 (E)
   "Mouse right click. Select word or if eww buffer then lookup translation.
 Second right click to select quote."
   (interactive "e")
-  (mouse-set-point e)
+  (mouse-set-point E)
   (if (eq major-mode 'eww-mode)
       (translate)
     (if (use-region-p)
@@ -3617,14 +3621,14 @@ Second right click to select quote."
 
 ;; Windows
 
-(defun enlarge-window-around (fun &rest r)
+(defun enlarge-window-around (Fun &rest R)
   "If one window, then split window. Otherwise enlarge window."
   (if (one-window-p)
       (progn
         (setq this-command 'split-window-below)
         (split-window-below)
         (enlarge-window-split))
-    (apply fun r)))
+    (apply Fun R)))
 
 (advice-add 'enlarge-window :around #'enlarge-window-around)
 
@@ -3642,12 +3646,12 @@ Second right click to select quote."
 (defun split-window-rotate ()
   "Rotate window split."
   (interactive)
-  (when-let ((root (car (window-tree)))
-             ((listp root))
-             (w1 (nth 2 root))
-             (w2 (nth 3 root))
-             (b1 (window-buffer w1))
-             (b2 (window-buffer w2)))
+  (when-let* ((root (car (window-tree)))
+              ((listp root))
+              (w1 (nth 2 root))
+              (w2 (nth 3 root))
+              (b1 (window-buffer w1))
+              (b2 (window-buffer w2)))
     (cond
      ((car root) ; currently vertically split
       (delete-window w2)
@@ -3656,23 +3660,13 @@ Second right click to select quote."
       (delete-window w1) ; currently horizontally split
       (set-window-buffer (split-window-vertically) b1)))))
 
-(defun any-window-dedicated-p (&optional frame)
+(defun any-window-dedicated-p (&optional Frame)
   "Return t if any window in FRAME (default selected frame) is dedicated."
-  (let ((frame (or frame (selected-frame))))
+  (let ((frame (or Frame (selected-frame))))
     (catch 'found
       (dolist (win (window-list frame))
         (when (window-dedicated-p win)
           (throw 'found t))))))
-
-;; (defun split-window-below-wrap (fun &rest r)
-;;   "Split only if one window else rotate the split."
-;;   (if (or (not (eq this-command 'split-window-below))
-;;           (or (one-window-p)
-;;               (any-window-dedicated-p)))
-;;       (apply fun r)
-;;     (split-window-rotate)))
-
-;; (advice-add 'split-window-below :around #'split-window-below-wrap)
 
 (defun other-win ()
   "Other Window."
@@ -3680,12 +3674,88 @@ Second right click to select quote."
   (setq this-command 'other-window)
   (other-window 1))
 
-(defun enlarge-window-any ()
-  "Enlarge current window in any direction."
+(defconst window-layout-registers '(?1 ?2 ?3 ?4 ?5)
+  "Registers reserved for window layouts.")
+
+(defvar window-layout-current nil
+  "Last saved or restored layout register.")
+
+(defun window-layout-registers-used ()
+  "Return registers containing window configurations in cycle order."
+  (cl-remove-if-not
+   (lambda (Reg)
+     (let ((val (get-register Reg)))
+       (and (consp val) (window-configuration-p (car val)))))
+   window-layout-registers))
+
+(defun window-layout-save ()
+  "Save the window layout in a free register, or explicitly choose a replacement."
   (interactive)
-  (if (window-in-direction 'right)
-      (enlarge-window-horizontally 1)
-    (enlarge-window 1)))
+  (let ((reg (cl-find-if-not #'get-register window-layout-registers)))
+    (unless reg
+      (let ((regs (window-layout-registers-used)))
+        (unless regs
+          (user-error "Layout registers are occupied by other data"))
+        (setq reg
+              (string-to-char
+               (completing-read "Replace layout register: "
+                                (mapcar #'char-to-string regs) nil t)))))
+    (window-configuration-to-register reg)
+    (setq window-layout-current reg)
+    (message "Layout saved to register %c" reg)))
+
+(defun window-layout-next (&optional Previous)
+  "Restore the next saved layout, or the previous one when PREVIOUS is non-nil."
+  (interactive)
+  (let* ((regs (window-layout-registers-used))
+         (pos (cl-position window-layout-current regs)))
+    (unless regs
+      (user-error "No saved window layouts in registers 1–5"))
+    (let ((reg (nth (if pos
+                       (mod (+ pos (if Previous -1 1)) (length regs))
+                     (if Previous (1- (length regs)) 0))
+                   regs)))
+      (jump-to-register reg)
+      (setq window-layout-current reg))))
+
+(defun window-layout-prev ()
+  "Restore the previous saved layout."
+  (interactive)
+  (window-layout-next t))
+
+(defun enlarge-window-any-save (Fun &rest Args)
+  "Remember the frame layout when FUN removes the other windows with ARGS."
+  (let* ((frame (window-frame (or (car Args) (selected-window))))
+         (wins (window-list frame 'nomini))
+         (config (when (cdr wins) (current-window-configuration frame))))
+    (prog1 (apply Fun Args)
+      (when (and config (= (length (window-list frame 'nomini)) 1))
+        (set-frame-parameter frame 'enlarge-window-any-layout config)))))
+
+(advice-add 'delete-other-windows :around #'enlarge-window-any-save)
+
+(defun enlarge-window-any ()
+  "Restore removed windows, or toggle a two-window split between half and two-thirds.
+Restore the last layout collapsed by `delete-other-windows' in this frame.
+Consume the saved layout after restoration; leave larger layouts unchanged."
+  (interactive)
+  (let ((wins (window-list nil 'nomini)))
+    (pcase (length wins)
+      (1
+       (when-let* ((frame (selected-frame))
+                   (config (frame-parameter frame 'enlarge-window-any-layout)))
+         (when (set-window-configuration config)
+           (set-frame-parameter frame 'enlarge-window-any-layout nil))))
+      (2
+       (let* ((horizontal (window-combined-p nil t))
+              (size (if horizontal #'window-total-width #'window-total-height))
+              (total (apply #'+ (mapcar size wins)))
+              (now (funcall size))
+              ;; An even split may differ by one row or column.
+              (target (if (> now (ceiling total 2))
+                          (/ total 2)
+                        (/ (* total 2) 3))))
+         (window-resize (selected-window) (- target now) horizontal))))))
 
 (defun shrink-window-any ()
   "Shrink current window in any direction."
@@ -3696,21 +3766,21 @@ Second right click to select quote."
 
 (defun shrink-win ()
   "Shrink window to fit rows count."
-  (when-let ((num (count-lines (point-min) (point-max)))
-             ((< num (window-total-height))))
+  (when-let* ((num (count-lines (point-min) (point-max)))
+              ((< num (window-total-height))))
     (enlarge-window (- num (window-total-height)))))
 
 (defun shrink-completion-win ()
   "Shrink completion window."
-  (when-let ((win (get-buffer-window "*Completions*")))
+  (when-let* ((win (get-buffer-window "*Completions*")))
     (select-window win)
     (shrink-win)
     (select-window (get-buffer-window completion-reference-buffer))))
 
 (defun completion-at-point-after (&rest _)
   "Setup after run completion at point."
-  (when-let ((buf "*Completions*")
-             (win (get-buffer-window buf)))
+  (when-let* ((buf "*Completions*")
+              (win (get-buffer-window buf)))
     (with-current-buffer buf
       (save-excursion
         (let ((inhibit-read-only t))
@@ -3724,7 +3794,7 @@ Second right click to select quote."
 (defun delete-completion-win ()
   "Delete completion window."
   (interactive)
-  (when-let ((win (get-buffer-window "*Completions*")))
+  (when-let* ((win (get-buffer-window "*Completions*")))
     (select-window win)
     (delete-window)
     (select-window (get-buffer-window completion-reference-buffer))))
@@ -3737,9 +3807,9 @@ Second right click to select quote."
     (set-window-parameter nil 'no-delete-other-windows x)))
 
 (defun scroll-one-pixel (&rest _)
-  "Scroll one pixel up. Disables recentering cursor temporary."
-  (when pixel-scroll-mode
-    (pixel-scroll-pixel-up 1)))
+  "Scroll text up one pixel using precision scrolling."
+  (when (bound-and-true-p pixel-scroll-precision-mode)
+    (pixel-scroll-precision-scroll-down 1)))
 
 (defun view-messages ()
   "Custom for `view-echo-area-messages', display window below selected."
@@ -3753,7 +3823,7 @@ Second right click to select quote."
 (defun toggle-messages ()
   "Toggle `view-messages'."
   (interactive)
-  (if-let ((win (get-buffer-window (messages-buffer))))
+  (if-let* ((win (get-buffer-window (messages-buffer))))
       (delete-window win)
     (view-messages)))
 
@@ -3878,12 +3948,15 @@ Marginalia annotation support."
                    . ,(lambda (key)
                         (format " %s" (cdr (assoc key prog-commands))))))
               (complete-with-action action (mapcar #'car prog-commands) str pred))))))
-  (if-let ((cmd (intern (concat Cmd "-new")))
+  (if-let* ((cmd (intern (concat Cmd "-new")))
            ((fboundp cmd)))
       (funcall cmd)
     (message "No command %s" Cmd)))
 
+(defvar buf-or-bookmark-history nil "History of selected buffers and bookmarks.")
+
 (defun buf-or-bookmark ()
+  "Switch to a buffer or jump to a bookmark using a separate history."
   (interactive)
   (let* ((buffers (mapcar #'buffer-name
                           (cl-remove-if (lambda (b)
@@ -3905,7 +3978,8 @@ Marginalia annotation support."
     (let ((choice (minibuffer-with-setup-hook
                       (lambda ()
                         (setq-local completion-ignore-case t))
-                    (completing-read "Buffer: " collection nil t))))
+                    (completing-read "Buffer: " collection nil t nil
+                                     'buf-or-bookmark-history))))
       (if (member choice buffers)
           (switch-to-buffer choice)
         (bookmark-jump choice)))))
@@ -3940,28 +4014,99 @@ Marginalia annotation support."
 (defun bookmark-jump-remote ()
   "Jump to bookmark whose remote matches current default-directory."
   (interactive)
-  (if-let ((remote-method (file-remote-p default-directory))
-           (remote-prefix (substring default-directory 0 (length remote-method)))
-           (cands-paths
-            (mapcar (lambda (p) (concat remote-prefix p))
-                    bookmark-jump-remote-places))
-           (cands (append cands-paths
-                          (cl-remove-if-not
-                           (lambda (b)
-                             (when-let ((loc (bookmark-location b)))
-                               (string-prefix-p remote-prefix loc)))
-                           (bookmark-all-names))))
-           (target (completing-read "Jump remote bookmark: " cands nil t)))
+  (if-let* ((remote-method (file-remote-p default-directory))
+            (remote-prefix (substring default-directory 0 (length remote-method)))
+            (cands-paths
+             (mapcar (lambda (p) (concat remote-prefix p))
+                     bookmark-jump-remote-places))
+            (cands (append cands-paths
+                           (cl-remove-if-not
+                            (lambda (b)
+                              (when-let* ((loc (bookmark-location b)))
+                                (string-prefix-p remote-prefix loc)))
+                            (bookmark-all-names))))
+            (target (completing-read "Jump remote bookmark: " cands nil t)))
       (if (member target cands-paths)
           (find-file target)
         (bookmark-jump target))
     (message "No matching bookmarks found")))
 
+(defun split-window-other-buffer ()
+  "Return a previous non-GPG buffer, keeping Dired or the fallback current buffer."
+  (if (derived-mode-p 'dired-mode)
+      (current-buffer)
+    (let ((buf (current-buffer)))
+      (or (cl-find-if
+           (lambda (b)
+             (and (not (eq b buf))
+                  (not (string-prefix-p " " (buffer-name b)))
+                  (with-current-buffer b
+                    (not (string-suffix-p ".gpg"
+                                          (or buffer-file-name (buffer-name)))))))
+           (cons (other-buffer) (buffer-list (selected-frame))))
+          buf))))
+
 (defun split-window-r ()
-  "Delete other windows then split window right"
+  "Keep the current window, or split below if it is the only unpinned window."
   (interactive)
-  (delete-other-windows)
-  (split-window-right))
+  (let ((n (cl-count-if-not #'window-dedicated-p (window-list))))
+    (delete-other-windows)
+    (when (= n 1)
+      (set-window-buffer (split-window-below)
+                         (split-window-other-buffer)))))
+
+(defun split-window-r-cur ()
+  "Split right if alone, showing a previous vterm when splitting a vterm.
+Otherwise delete only if an unpinned window remains."
+  (interactive)
+  (if (one-window-p)
+      (let ((buf (if (eq major-mode 'vterm-mode)
+                     (or (cl-find-if
+                          (lambda (b)
+                            (and (buffer-live-p b)
+                                 (not (eq b (current-buffer)))
+                                 (not (member (buffer-name b)
+                                              '("*vterm clock*" "*vterm localhost*")))
+                                 (not (string-prefix-p " *vt localhost:" (buffer-name b)))
+                                 (with-current-buffer b
+                                   (eq major-mode 'vterm-mode))))
+                          (mapcar #'car (window-prev-buffers)))
+                         (current-buffer))
+                   (split-window-other-buffer))))
+        (set-window-buffer (split-window-right) buf))
+    (unless (cl-every #'window-dedicated-p
+                      (remq (selected-window) (window-list)))
+      (delete-window))))
+
+(defun same-buf ()
+  "Show the neighboring buffer, split or rotate views, ignoring dedicated windows."
+  (interactive)
+  (unless (window-dedicated-p)
+    (let ((wins (cl-remove-if #'window-dedicated-p
+                             (window-list nil 'nomini (frame-first-window)))))
+      (cond
+       ((= (length wins) 1) (split-window-below))
+       ((= (length wins) 2)
+        (let ((other (car (remq (selected-window) wins))))
+          (cond
+           ((not (eq (window-buffer) (window-buffer other)))
+            (switch-to-buffer (window-buffer other)))
+           ((and (eq (window-parent (car wins)) (window-parent (cadr wins)))
+                 (eq (window-next-sibling (car wins)) (cadr wins)))
+            (let ((idx (if (eq (selected-window) (car wins)) 0 1))
+                  (side (if (window-combined-p (car wins) t) 'below 'right))
+                  (states (mapcar (lambda (w)
+                                    (list (window-point w) (window-start w)
+                                          (window-hscroll w)))
+                                  wins)))
+              (delete-window (cadr wins))
+              (setq wins (list (car wins) (split-window (car wins) nil side)))
+              (cl-mapc (lambda (w s)
+                         (set-window-point w (nth 0 s))
+                         (set-window-start w (nth 1 s) t)
+                         (set-window-hscroll w (nth 2 s)))
+                       wins states)
+              (select-window (nth idx wins)))))))))))
 
 (defun kill-uuid ()
   "Generate and copy UUID to kill ring."
@@ -3983,23 +4128,23 @@ Marginalia annotation support."
      (string-to-list
       (read-string "Reverse string: "))))))
 
-(defun reverse-region (beg end)
+(defun reverse-region (Beg End)
   "Reverse the region between point and mark."
   (interactive "*r")
-  (goto-char end)
-  (let ((p end))
-    (while (> p beg)
+  (goto-char End)
+  (let ((p End))
+    (while (> p Beg)
       (insert (char-after (setq p (1- p))))))
-  (delete-region beg end)
-  (goto-char beg))
+  (delete-region Beg End)
+  (goto-char Beg))
 
-(defun enumerate-lines (beg end)
+(defun enumerate-lines (Beg End)
   "Enumerate lines in region."
   (interactive "r")
   (save-excursion
-    (goto-char beg)
+    (goto-char Beg)
     (let ((n 1))
-      (while (< (point) end)
+      (while (< (point) End)
         (beginning-of-line)
         (insert (format "%d. " n))
         (forward-line)
@@ -4009,12 +4154,12 @@ Marginalia annotation support."
   "Split display on 2x2 windows and select different buffers.
 Click mouse select a window and close the others."
   (interactive)
-  (when-let (((display-graphic-p))
-             (bufs (seq-filter
-                    (lambda (buf)
-                      (buffer-file-name buf))
-                    (buffer-list))))
-    (when-let ((win (get-buffer-window "*Org Agenda*")))
+  (when-let* (((display-graphic-p))
+              (bufs (seq-filter
+                     (lambda (buf)
+                       (buffer-file-name buf))
+                     (buffer-list))))
+    (when-let* ((win (get-buffer-window "*Org Agenda*")))
       (select-window win)
       (delete-window))
     (delete-other-windows)
